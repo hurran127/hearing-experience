@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>노인 청각 체험 프로그램</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.4.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --color-bg: #ffffff;
+    --color-bg-secondary: #f5f5f3;
+    --color-bg-tertiary: #eeede8;
+    --color-text: #1a1a18;
+    --color-text-secondary: #6b6b67;
+    --color-border: rgba(0,0,0,0.12);
+    --color-border-md: rgba(0,0,0,0.22);
+    --color-purple-bg: #EEEDFE;
+    --color-purple: #534AB7;
+    --color-purple-dark: #3C3489;
+    --color-green: #1D9E75;
+    --color-amber: #BA7517;
+    --color-red: #A32D2D;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-bg: #1a1a18;
+      --color-bg-secondary: #252523;
+      --color-bg-tertiary: #2e2e2b;
+      --color-text: #f0efea;
+      --color-text-secondary: #9a9994;
+      --color-border: rgba(255,255,255,0.12);
+      --color-border-md: rgba(255,255,255,0.22);
+      --color-purple-bg: #26215C;
+      --color-purple: #AFA9EC;
+      --color-purple-dark: #CECBF6;
+    }
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+    background: var(--color-bg-tertiary);
+    color: var(--color-text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+  .app {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  header .eyebrow {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--color-purple);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  header h1 {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  header p {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 1.25rem;
+  }
+  .tab-btn {
+    padding: 12px 8px;
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+    color: var(--color-text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .tab-btn i { display: block; font-size: 22px; margin-bottom: 5px; }
+  .tab-btn.active {
+    border-color: var(--color-purple);
+    background: var(--color-purple-bg);
+    color: var(--color-purple-dark);
+    font-weight: 500;
+  }
+  .tab-btn:hover:not(.active) { background: var(--color-bg-secondary); }
+  .panel {
+    display: none;
+    background: var(--color-bg);
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+  }
+  .panel.active { display: block; }
+  .panel-title { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .panel-desc { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.5rem; line-height: 1.65; }
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+  .ctrl-label { font-size: 13px; color: var(--color-text-secondary); min-width: 88px; }
+  .ctrl-row input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-border-md);
+    outline: none;
+  }
+  .ctrl-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--color-purple);
+    cursor: pointer;
+  }
+  .ctrl-row select {
+    flex: 1;
+    padding: 7px 10px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--color-border-md);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 13px;
+  }
+  .ctrl-val { font-size: 13px; font-weight: 500; min-width: 60px; text-align: right; }
+  .age-badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--color-purple-bg);
+    color: var(--color-purple-dark);
+    font-weight: 500;
+    margin-left: 4px;
+  }
+  .freq-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .freq-bars { display: flex; align-items: flex-end; gap: 5px; height: 90px; margin-bottom: 1.25rem; }
+  .freq-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; height: 100%; justify-content: flex-end; }
+  .freq-bar { width: 100%; border-radius: 3px 3px 0 0; transition: height 0.5s ease; }
+  .freq-pct { font-size: 10px; color: var(--color-text-secondary); }
+  .freq-name { font-size: 10px; color: var(--color-text-secondary); }
+  .play-btn {
+    width: 100%;
+    padding: 13px;
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--color-border-md);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.15s;
+    margin-top: 0.5rem;
+  }
+  .play-btn:hover { background: var(--color-bg-secondary); }
+  .play-btn.playing { border-color: #A32D2D; color: #A32D2D; }
+  .status-bar {
+    margin-top: 1rem;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-secondary);
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    line-height: 1.5;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border-md); flex-shrink: 0; }
+  .dot.green { background: var(--color-green); }
+  .dot.red { background: var(--color-red); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
+  .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 1rem; }
+  .compare-card {
+    border: 0.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    text-align: center;
+    background: var(--color-bg-secondary);
+  }
+  .compare-card h3 { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .compare-card .big { font-size: 30px; margin-bottom: 8px; }
+  .compare-card .play-btn { font-size: 13px; padding: 9px; }
+  .info-tip {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    background: var(--color-bg-secondary);
+    border-left: 3px solid var(--color-purple);
+    padding: 8px 12px;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+  footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="eyebrow">청각 인식 교육 프로그램</div>
+    <h1>🦻 노인 청각 체험</h1>
+    <p>노인이 듣는 세상을 직접 체험해보세요.<br>이어폰·헤드폰 착용 시 효과가 더욱 생생합니다.</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showPanel('highfreq',this)">
+      <i class="ti ti-chart-histogram"></i>고주파 청력 손실
+    </button>
+    <button class="tab-btn" onclick="showPanel('noise',this)">
+      <i class="ti ti-wave-sine"></i>소음 속 대화
+    </button>
+    <button class="tab-btn" onclick="showPanel('tinnitus',this)">
+      <i class="ti ti-ripple"></i>이명 체험
+    </button>
+    <button class="tab-btn" onclick="showPanel('hearing',this)">
+      <i class="ti ti-adjustments-horizontal"></i>보청기 비교
+    </button>
+  </div>
+
+  <!-- 패널 1 -->
+  <div class="panel active" id="panel-highfreq">
+    <div class="panel-title">고주파 청력 손실 시뮬레이션</div>
+    <div class="panel-desc">나이가 들수록 고주파(고음) 대역부터 청력이 저하됩니다. 슬라이더로 연령대를 조정하면 해당 나이대의 청각으로 소리가 변합니다.</div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">연령대</span>
+      <input type="range" id="age-slider" min="20" max="80" value="20" step="10" oninput="updateAge(this.value)">
+      <span class="ctrl-val"><span id="age-val">20</span>세 <span class="age-badge" id="age-badge">정상 청력</span></span>
+    </div>
+    <div class="freq-label"><span>저음 (250Hz)</span><span>고음 (8kHz)</span></div>
+    <div class="freq-bars" id="freq-bars"></div>
+    <button class="play-btn" id="btn-highfreq" onclick="toggleHighfreq()">
+      <i class="ti ti-player-play" id="icon-highfreq"></i> 체험 시작
+    </button>
+    <div class="status-bar"><div class="dot" id="dot-highfreq"></div><span id="status-highfreq">버튼을 눌러 체험을 시작하세요</span></div>
+    <div class="info-tip">💡 노화성 난청(presbycusis)은 가장 흔한 청각 장애로, 60세 이상 인구의 약 30%에서 나타납니다.</div>
+  </div>
+
+  <!-- 패널 2 -->
+  <div class="panel" id="panel-noise">
+    <div class="panel-title">소음 속 대화 어려움 체험</div>
+    <div class="panel-desc">식당, 지하철 등 소음이 많은 환경에서 노인은 대화를 이해하기 매우 어렵습니다. 소음 강도를 높여보세요.</div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">소음 강도</span>
+      <input type="range" id="noise-level" min="0" max="100" value="30" oninput="updateNoiseLabel(this.value)">
+      <span class="ctrl-val"><span id="noise-val">30</span>%</span>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">환경 선택</span>
+      <select id="noise-type">
+        <option value="restaurant">🍽️ 식당 소음</option>
+        <option value="traffic">🚗 도로 교통</option>
+        <option value="crowd">👥 군중 소음</option>
+      </select>
+    </div>
+    <button class="play-btn" id="btn-noise" onclick="toggleNoise()">
+      <i class="ti ti-player-play" id="icon-noise"></i> 소음 체험 시작
+    </button>
+    <div class="status-bar"><div class="dot" id="dot-noise"></div><span id="status-noise">소음이 클수록 노인은 대화를 이해하기 어렵습니다</span></div>
+    <div class="info-tip">💡 청력 손실이 있는 노인은 소음 환경에서 말소리 구별 능력이 정상 청력의 40% 이하로 떨어질 수 있습니다.</div>
+  </div>
+
+  <!-- 패널 3 -->
+  <div class="panel" id="panel-tinnitus">
+    <div class="panel-title">이명(귀울림) 체험</div>
+    <div class="panel-desc">65세 이상 노인의 약 30%가 이명을 경험합니다. 항상 귀에서 소리가 들리는 고통을 체험해보세요.</div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">이명 주파수</span>
+      <input type="range" id="tinnitus-freq" min="2000" max="12000" value="6000" step="500" oninput="updateTinnitusLabel()">
+      <span class="ctrl-val"><span id="tfreq-val">6000</span>Hz</span>
+    </div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">이명 크기</span>
+      <input type="range" id="tinnitus-vol" min="0" max="80" value="20" oninput="updateTinnitusLabel()">
+      <span class="ctrl-val"><span id="tvol-val">20</span>%</span>
+    </div>
+    <button class="play-btn" id="btn-tinnitus" onclick="toggleTinnitus()">
+      <i class="ti ti-player-play" id="icon-tinnitus"></i> 이명 체험 시작
+    </button>
+    <div class="status-bar"><div class="dot" id="dot-tinnitus"></div><span id="status-tinnitus">이 소리가 24시간 멈추지 않는다고 상상해보세요</span></div>
+    <div class="info-tip">💡 이명은 수면 장애, 집중력 저하, 우울증을 동반하는 경우가 많아 삶의 질에 큰 영향을 미칩니다.</div>
+  </div>
+
+  <!-- 패널 4 -->
+  <div class="panel" id="panel-hearing">
+    <div class="panel-title">보청기 착용 전후 비교</div>
+    <div class="panel-desc">보청기는 고주파 대역을 보강하여 대화를 더 잘 들을 수 있게 합니다. 두 버튼을 번갈아 눌러 차이를 느껴보세요.</div>
+    <div class="ctrl-row">
+      <span class="ctrl-label">청력 손실 정도</span>
+      <input type="range" id="loss-level" min="0" max="100" value="60" oninput="updateLossLabel(this.value)">
+      <span class="ctrl-val"><span id="loss-val">중증도</span></span>
+    </div>
+    <div class="compare-row">
+      <div class="compare-card">
+        <h3>보청기 없음</h3>
+        <div class="big">🔇</div>
+        <button class="play-btn" id="btn-before" onclick="toggleBefore()">
+          <i class="ti ti-player-play" id="icon-before"></i> 착용 전
+        </button>
+      </div>
+      <div class="compare-card">
+        <h3>보청기 착용</h3>
+        <div class="big">🔊</div>
+        <button class="play-btn" id="btn-after" onclick="toggleAfter()">
+          <i class="ti ti-player-play" id="icon-after"></i> 착용 후
+        </button>
+      </div>
+    </div>
+    <div class="status-bar"><div class="dot" id="dot-hearing"></div><span id="status-hearing">착용 전/후를 번갈아 들으며 차이를 비교해보세요</span></div>
+    <div class="info-tip">💡 보청기 착용 후 적응 기간은 보통 3~6개월이 필요하며, 조기에 착용할수록 적응이 쉽습니다.</div>
+  </div>
+
+  <footer>노인 청각 인식 교육 프로그램 · 이어폰 착용 권장</footer>
+</div>
+
+<script>
+let actx = null;
+let activeNodes = [];
+let isPlaying = { highfreq: false, noise: false, tinnitus: false, before: false, after: false };
+
+function getCtx() {
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+  if (actx.state === 'suspended') actx.resume();
+  return actx;
+}
+
+function stopAll() {
+  activeNodes.forEach(n => { try { n.stop(); } catch(e){} try { n.disconnect(); } catch(e){} });
+  activeNodes = [];
+}
+
+function showPanel(id, btn) {
+  stopAllPlayback();
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function stopAllPlayback() {
+  stopAll();
+  Object.keys(isPlaying).forEach(k => isPlaying[k] = false);
+  ['highfreq','noise','tinnitus','before','after'].forEach(k => {
+    const btn = document.getElementById('btn-' + k);
+    const icon = document.getElementById('icon-' + k);
+    const dotId = (k === 'before' || k === 'after') ? 'dot-hearing' : 'dot-' + k;
+    const dot = document.getElementById(dotId);
+    if(btn) btn.classList.remove('playing');
+    if(icon) icon.className = 'ti ti-player-play';
+    if(dot) dot.className = 'dot';
+  });
+}
+
+function setPlaying(key, statusText) {
+  isPlaying[key] = true;
+  const btn = document.getElementById('btn-' + key);
+  const icon = document.getElementById('icon-' + key);
+  const dotId = (key === 'before' || key === 'after') ? 'dot-hearing' : 'dot-' + key;
+  const statusId = (key === 'before' || key === 'after') ? 'status-hearing' : 'status-' + key;
+  const dot = document.getElementById(dotId);
+  const status = document.getElementById(statusId);
+  if(btn) btn.classList.add('playing');
+  if(icon) icon.className = 'ti ti-player-stop';
+  if(dot) dot.className = 'dot red';
+  if(status && statusText) status.textContent = statusText;
+}
+
+function setStopped(key, statusText) {
+  isPlaying[key] = false;
+  const btn = document.getElementById('btn-' + key);
+  const icon = document.getElementById('icon-' + key);
+  const dotId = (key === 'before' || key === 'after') ? 'dot-hearing' : 'dot-' + key;
+  const statusId = (key === 'before' || key === 'after') ? 'status-hearing' : 'status-' + key;
+  const dot = document.getElementById(dotId);
+  const status = document.getElementById(statusId);
+  if(btn) btn.classList.remove('playing');
+  if(icon) icon.className = 'ti ti-player-play';
+  if(dot) dot.className = 'dot';
+  if(status && statusText) status.textContent = statusText;
+}
+
+const ageBadges = { 20:'정상 청력', 30:'정상 청력', 40:'경미한 손실', 50:'경미한 손실', 60:'중등도 손실', 70:'중고도 손실', 80:'고도 손실' };
+const ageBarColors = { 20:'#1D9E75', 30:'#1D9E75', 40:'#3B6D11', 50:'#BA7517', 60:'#D85A30', 70:'#D85A30', 80:'#A32D2D' };
+const ageMap = {
+  20:[95,95,95,95,95,95,95], 30:[95,95,92,90,85,80,75],
+  40:[93,92,90,85,75,65,55], 50:[90,88,85,78,65,50,40],
+  60:[88,85,80,70,52,38,28], 70:[85,80,72,60,40,28,18], 80:[80,72,62,48,28,18,10]
+};
+const freqLabels = ['250','500','1k','2k','4k','6k','8k'];
+const cutoffMap = { 20:16000, 30:13000, 40:10000, 50:7000, 60:4500, 70:3000, 80:2000 };
+const statusMap = {
+  20:'정상 청력 — 모든 음역대가 선명하게 들립니다',
+  30:'30대 청력 — 매우 고음이 약간 감소합니다',
+  40:'40대 청력 — 고음이 점차 줄어들기 시작합니다',
+  50:'50대 청력 — 고주파 대역이 눈에 띄게 줄어듭니다',
+  60:'60대 청력 — 중·고음 대역이 현저히 감소합니다',
+  70:'70대 청력 — 대화 주파수도 영향을 받습니다',
+  80:'80대 청력 — 전반적인 청력 저하 상태입니다'
+};
+
+function drawFreqBars(age) {
+  const container = document.getElementById('freq-bars');
+  const vals = ageMap[age] || ageMap[20];
+  const col = ageBarColors[age] || '#A32D2D';
+  container.innerHTML = freqLabels.map((label, i) => {
+    const h = vals[i];
+    return `<div class="freq-bar-wrap">
+      <span class="freq-pct">${Math.round(h)}%</span>
+      <div class="freq-bar" style="height:${Math.round(h * 0.65)}px;background:${col};"></div>
+      <span class="freq-name">${label}</span>
+    </div>`;
+  }).join('');
+}
+
+function updateAge(val) {
+  val = parseInt(val);
+  document.getElementById('age-val').textContent = val;
+  document.getElementById('age-badge').textContent = ageBadges[val] || '고도 손실';
+  drawFreqBars(val);
+  if(isPlaying.highfreq) { stopAll(); isPlaying.highfreq = false; startHighfreq(val); }
+}
+
+function updateNoiseLabel(v) { document.getElementById('noise-val').textContent = v; }
+function updateTinnitusLabel() {
+  document.getElementById('tfreq-val').textContent = document.getElementById('tinnitus-freq').value;
+  document.getElementById('tvol-val').textContent = document.getElementById('tinnitus-vol').value;
+}
+function updateLossLabel(v) {
+  const labels = ['경미', '경도', '중등도', '중증도', '고도'];
+  document.getElementById('loss-val').textContent = labels[Math.min(Math.floor(parseInt(v) / 20), 4)];
+}
+
+function startHighfreq(age) {
+  age = age || parseInt(document.getElementById('age-slider').value);
+  const ctx = getCtx();
+  const cutoff = cutoffMap[age] || 16000;
+  const freqs = [440, 880, 1760];
+  freqs.forEach(f => {
+    const osc = ctx.createOscillator(); osc.frequency.value = f; osc.type = 'sine';
+    const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = cutoff; filter.Q.value = 0.5;
+    const g = ctx.createGain(); g.gain.value = 0.12;
+    osc.connect(filter); filter.connect(g); g.connect(ctx.destination);
+    osc.start();
+    activeNodes.push(osc, filter, g);
+  });
+  setPlaying('highfreq', statusMap[age]);
+}
+
+function toggleHighfreq() {
+  if(isPlaying.highfreq) { stopAll(); setStopped('highfreq','체험을 멈췄습니다. 다시 시작하려면 버튼을 누르세요'); }
+  else { startHighfreq(); }
+}
+
+function toggleNoise() {
+  if(isPlaying.noise) { stopAll(); setStopped('noise','소음 체험을 멈췄습니다'); return; }
+  const ctx = getCtx();
+  const level = parseInt(document.getElementById('noise-level').value) / 100;
+  const noiseType = document.getElementById('noise-type').value;
+  const bufSize = ctx.sampleRate * 2;
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for(let i=0;i<bufSize;i++) data[i] = Math.random()*2-1;
+  const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+  const filter = ctx.createBiquadFilter();
+  filter.type = noiseType === 'traffic' ? 'lowpass' : 'bandpass';
+  filter.frequency.value = noiseType === 'restaurant' ? 2000 : noiseType === 'traffic' ? 400 : 1200;
+  filter.Q.value = 0.8;
+  const noiseGain = ctx.createGain(); noiseGain.gain.value = level * 0.5;
+  src.connect(filter); filter.connect(noiseGain); noiseGain.connect(ctx.destination);
+  src.start();
+  activeNodes.push(src, filter, noiseGain);
+  const noiseLabels = { restaurant:'식당 소음 체험 중', traffic:'도로 소음 체험 중', crowd:'군중 소음 체험 중' };
+  setPlaying('noise', noiseLabels[noiseType] + ` — 소음 강도 ${Math.round(level*100)}%`);
+}
+
+function toggleTinnitus() {
+  if(isPlaying.tinnitus) { stopAll(); setStopped('tinnitus','이명 체험을 멈췄습니다'); return; }
+  const ctx = getCtx();
+  const freq = parseInt(document.getElementById('tinnitus-freq').value);
+  const vol = parseInt(document.getElementById('tinnitus-vol').value) / 100;
+  const osc = ctx.createOscillator(); osc.frequency.value = freq; osc.type = 'sine';
+  const g = ctx.createGain(); g.gain.value = vol * 0.12;
+  osc.connect(g); g.connect(ctx.destination); osc.start();
+  activeNodes.push(osc, g);
+  setPlaying('tinnitus', `${freq}Hz 이명음 재생 중 — 노인은 이 소리가 항상 들립니다`);
+}
+
+function toggleBefore() {
+  if(isPlaying.before) { stopAll(); setStopped('before',''); setStopped('after',''); document.getElementById('status-hearing').textContent = '착용 전/후를 번갈아 들으며 차이를 비교해보세요'; return; }
+  if(isPlaying.after) { stopAll(); isPlaying.after = false; setStopped('after',''); }
+  const ctx = getCtx();
+  const loss = parseInt(document.getElementById('loss-level').value) / 100;
+  const freqs = [400, 800, 1600];
+  freqs.forEach(f => {
+    const osc = ctx.createOscillator(); osc.frequency.value = f; osc.type = 'sine';
+    const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 1500 + (1-loss)*4000;
+    const g = ctx.createGain(); g.gain.value = 0.1;
+    osc.connect(filter); filter.connect(g); g.connect(ctx.destination); osc.start();
+    activeNodes.push(osc, filter, g);
+  });
+  setPlaying('before', '보청기 없음 — 고음이 잘 들리지 않는 상태입니다');
+}
+
+function toggleAfter() {
+  if(isPlaying.after) { stopAll(); setStopped('before',''); setStopped('after',''); document.getElementById('status-hearing').textContent = '착용 전/후를 번갈아 들으며 차이를 비교해보세요'; return; }
+  if(isPlaying.before) { stopAll(); isPlaying.before = false; setStopped('before',''); }
+  const ctx = getCtx();
+  const freqs = [400, 800, 1600];
+  freqs.forEach(f => {
+    const osc = ctx.createOscillator(); osc.frequency.value = f; osc.type = 'sine';
+    const boost = ctx.createBiquadFilter(); boost.type = 'highshelf'; boost.frequency.value = 2000; boost.gain.value = 14;
+    const g = ctx.createGain(); g.gain.value = 0.09;
+    osc.connect(boost); boost.connect(g); g.connect(ctx.destination); osc.start();
+    activeNodes.push(osc, boost, g);
+  });
+  setPlaying('after', '보청기 착용 후 — 고음 대역이 보강되어 더 선명하게 들립니다');
+}
+
+drawFreqBars(20);
+</script>
+</body>
+</html>
